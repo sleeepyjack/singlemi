@@ -39,66 +39,6 @@ void convert_data(SNPReader* reader, array_t* cases, index_t sizeCases, array_t*
   }
 }
 
-/*
-
-template <
-  typename index_t,
-  typename array_t,
-  typename value_t
-  >
-void filter(array_t* cases, index_t sizeCases, array_t* ctrls, index_t sizeCtrls, index_t n, index_t c, value_t Hy, value_t invInds, index_t* candidates)
-{
-  //evaluate I(X;Y) for each SNP X
-  value_t * mi; cudaMalloc(&mi, sizeof(value_t)*n); CUERR
-  singlemi_kernel<<<SDIV(n, BLOCKSIZE), BLOCKSIZE>>>(cases, sizeCases, ctrls, sizeCtrls, n, Hy, invInds, mi); CUERR
-
-  //sort SNPs descending according to I(X;Y)
-  index_t* tmp_index; cudaMalloc(&tmp_index, sizeof(index_t)*n); CUERR
-  value_t* tmp_value; cudaMalloc(&tmp_value, sizeof(value_t)*n); CUERR
-  iota_kernel<<<SDIV(n, BLOCKSIZE), BLOCKSIZE>>>(tmp_index, n); CUERR
-  void    *cub_tmp = NULL;
-  size_t  cub_bytes = 0;
-  cub::DeviceRadixSort::SortPairsDescending(cub_tmp, cub_bytes, mi, tmp_value, tmp_index, candidates, n); CUERR
-  cudaMalloc(&cub_tmp, cub_bytes); CUERR
-  cub::DeviceRadixSort::SortPairsDescending(cub_tmp, cub_bytes, mi, tmp_value, tmp_index, candidates, n); CUERR
-
-  cudaFree(tmp_index); CUERR
-  cudaFree(tmp_value); CUERR
-  cudaFree(cub_tmp); CUERR
-  cudaFree(mi); CUERR
-}
-
-template <
-  typename index_t,
-  typename array_t,
-  typename value_t
-  >
-void exhaustive_search(array_t* cases, index_t sizeCases, array_t* ctrls, index_t sizeCtrls, index_t* candidates, index_t c, index_t k, value_t Hy, value_t invInds, index_t* combination_out, value_t* mi_out)
-{
-  //evaluate I(X_1, ..., X_k;Y) for each k-combination of candidate SNPs (exhaustive search)
-  index_t nCk = binom(c, k);
-  value_t* mi; cudaMalloc(&mi, sizeof(value_t)*nCk); CUERR
-  exhaustive_search_kernel<<<SDIV((nCk < (1UL << 32)) ? nCk : (1UL << 32), BLOCKSIZE), BLOCKSIZE, (ipow(index_t(3), index_t(k))*k)*sizeof(index_t)>>>(cases, sizeCases, ctrls, sizeCtrls, candidates, c, k, nCk, Hy, invInds, mi); CUERR
-
-  //sort combinations descending according to I(X_1, ..., X_k;Y)
-  index_t* tmp_index; cudaMalloc(&tmp_index, sizeof(index_t)*nCk); CUERR
-  iota_kernel<<<SDIV(n, BLOCKSIZE), BLOCKSIZE>>>(combination_out, nCk); CUERR
-  void *cub_tmp = NULL;
-  size_t cub_bytes = 0;
-  cub::DeviceRadixSort::SortPairsDescending(cub_tmp, cub_bytes, mi, mi_out, tmp_index, combination_out, nCk); CUERR
-  cudaMalloc(&cub_tmp, cub_bytes); CUERR
-  cub::DeviceRadixSort::SortPairsDescending(cub_tmp, cub_bytes, mi_d, tmp_value, tmp_index, combinations_d, nCk); CUERR
-  combinations_h = (index_t*)malloc(sizeof(index_t)*nCk);
-  cudaMemcpy(combinations_h, combinations_d, sizeof(index_t)*nCk, D2H); CUERR
-  mi_h = (value_t*)malloc(sizeof(value_t)*nCk);
-  cudaMemcpy(mi_h, tmp_value, sizeof(value_t)*nCk, D2H); CUERR
-  cudaFree(combinations_d); CUERR
-  cudaFree(mi_d); CUERR
-  cudaFree(tmp_index); CUERR
-  cudaFree(tmp_value); CUERR
-  cudaFree(cub_tmp); CUERR
-}
-*/
 int main(int argc, char *argv[]) {
 
   typedef uint32_t index_t;
